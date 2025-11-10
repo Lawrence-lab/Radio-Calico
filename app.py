@@ -127,7 +127,7 @@ def add_user():
         if existing_user.username == username:
             flash(f'Username "{username}" is already taken!', 'error')
         else:
-            flash(f'Email "{email}" is already registered!', 'error')
+            flash(f'Email "{email}" is already registered before!', 'error')
         return redirect(url_for('admin'))
 
     try:
