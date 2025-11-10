@@ -172,4 +172,5 @@ Environment variables are stored in `.env`:
 
 ## Style Guide
 - A text version of the styling guide for the webpage is at "RadioCalico_Style_Guide.txt"
-- The Radio Caligo logo is at "RadioCalicoLogoTM.png"
+- The Radio Caligo logo is at "RadioCalicoLogoTM.png".
+
