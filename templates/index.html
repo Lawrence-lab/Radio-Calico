@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioCalico - User Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RadioCalico</h1>
+            <p>User Management System</p>
+        </div>
+
+        <!-- Now Playing Widget -->
+        <div class="now-playing" id="nowPlaying">
+            <h2>Now Playing</h2>
+            <div class="loading">Loading track information...</div>
+        </div>
+
+        <!-- Recently Played Widget -->
+        <div class="recently-played" id="recentlyPlayed">
+            <h2>Recently Played</h2>
+            <div class="loading">Loading recently played tracks...</div>
+        </div>
+
+        <div class="card">
+            <h2>Add New User</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/add-user">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="80" placeholder="Enter username">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required maxlength="120" placeholder="Enter email address">
+                </div>
+
+                <button type="submit" class="btn">Save User</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Registered Users</h2>
+
+            {% if users %}
+                <div class="users-list">
+                    {% for user in users %}
+                        <div class="user-item">
+                            <strong>{{ user.username }}</strong>
+                            <span class="email">{{ user.email }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <p>No users registered yet. Add your first user above!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Fetch and update now playing information
+        async function updateNowPlaying() {
+            try {
+                const response = await fetch('/api/now-playing');
+                const data = await response.json();
+
+                if (data.success) {
+                    updateNowPlayingWidget(data.current_track);
+                    updateRecentlyPlayedWidget(data.recently_played);
+                } else {
+                    showError('Failed to load track information');
+                }
+            } catch (error) {
+                console.error('Error fetching now playing:', error);
+                showError('Unable to connect to the server');
+            }
+        }
+
+        function updateNowPlayingWidget(track) {
+            const container = document.getElementById('nowPlaying');
+
+            // Create badges HTML
+            let badgesHtml = '';
+            if (track.is_new) badgesHtml += '<span class="badge new">NEW</span>';
+            if (track.is_explicit) badgesHtml += '<span class="badge explicit">EXPLICIT</span>';
+            if (track.is_summer) badgesHtml += '<span class="badge summer">SUMMER</span>';
+            if (track.is_vidgames) badgesHtml += '<span class="badge vidgames">VIDEO GAMES</span>';
+
+            const badgesSection = badgesHtml ? `<div class="track-badges">${badgesHtml}</div>` : '';
+
+            // Format audio quality
+            const audioQuality = track.bit_depth && track.sample_rate
+                ? `${track.bit_depth}-bit / ${(track.sample_rate / 1000).toFixed(1)} kHz`
+                : '';
+
+            const audioQualitySection = audioQuality
+                ? `<div class="audio-quality">${audioQuality}</div>`
+                : '';
+
+            const albumYear = track.album && track.date
+                ? `${track.album} (${track.date})`
+                : track.album || '';
+
+            container.innerHTML = `
+                <h2>Now Playing</h2>
+                <div class="track-info">
+                    <div class="album-art">🎵</div>
+                    <div class="track-details">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                        ${albumYear ? `<div class="track-album">${albumYear}</div>` : ''}
+                        ${audioQualitySection}
+                        ${badgesSection}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateRecentlyPlayedWidget(tracks) {
+            const container = document.getElementById('recentlyPlayed');
+
+            // Filter out tracks with empty artist/title
+            const validTracks = tracks.filter(track => track.artist && track.title);
+
+            if (validTracks.length === 0) {
+                container.innerHTML = `
+                    <h2>Recently Played</h2>
+                    <div class="loading">No recently played tracks available</div>
+                `;
+                return;
+            }
+
+            const tracksHtml = validTracks.map((track, index) => `
+                <div class="recent-track">
+                    <div class="recent-track-number">${index + 1}</div>
+                    <div class="recent-track-info">
+                        <div class="recent-track-title">${track.title}</div>
+                        <div class="recent-track-artist">${track.artist}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <h2>Recently Played</h2>
+                ${tracksHtml}
+            `;
+        }
+
+        function showError(message) {
+            const nowPlayingContainer = document.getElementById('nowPlaying');
+            const recentlyPlayedContainer = document.getElementById('recentlyPlayed');
+
+            nowPlayingContainer.innerHTML = `
+                <h2>Now Playing</h2>
+                <div class="error">${message}</div>
+            `;
+
+            recentlyPlayedContainer.innerHTML = `
+                <h2>Recently Played</h2>
+                <div class="error">${message}</div>
+            `;
+        }
+
+        // Update immediately on page load
+        updateNowPlaying();
+
+        // Update every 10 seconds
+        setInterval(updateNowPlaying, 10000);
+    </script>
+</body>
+</html>

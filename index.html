@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Calico - Live Stream</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="static/player.css">
+</head>
+<body>
+    <div class="player-container">
+        <h1>Radio Calico</h1>
+        <p class="subtitle">Lossless HLS Stream</p>
+
+        <div class="status offline" id="status">Offline</div>
+
+        <audio id="audio"></audio>
+
+        <div class="controls">
+            <button class="play-button" id="playButton" disabled>
+                <span id="playIcon">▶</span>
+            </button>
+        </div>
+
+        <div class="volume-control">
+            <div class="volume-icon">🔊</div>
+            <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+            <div class="volume-value" id="volumeValue">70%</div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Now Playing Widget -->
+        <div class="now-playing" id="nowPlaying">
+            <h2>Now Playing</h2>
+            <div class="loading">Loading track information...</div>
+        </div>
+
+        <!-- Recently Played Widget -->
+        <div class="recently-played" id="recentlyPlayed">
+            <h2>Recently Played</h2>
+            <div class="loading">Loading recently played tracks...</div>
+        </div>
+
+        <div class="stream-info">
+            <strong>Stream URL:</strong><br>
+            <small>live.m3u8</small>
+        </div>
+    </div>
+
+    <script src="static/player.js"></script>
+</body>
+</html>

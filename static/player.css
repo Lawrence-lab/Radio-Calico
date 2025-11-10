@@ -1,0 +1,434 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.player-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.status {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.status.offline {
+    background: #fee;
+    color: #c33;
+}
+
+.status.connecting {
+    background: #fef3cd;
+    color: #856404;
+}
+
+.status.live {
+    background: #d4edda;
+    color: #155724;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.controls {
+    margin: 30px 0;
+}
+
+.play-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.play-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.play-button:active {
+    transform: scale(0.95);
+}
+
+.play-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.volume-control {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.volume-icon {
+    color: #667eea;
+    font-size: 20px;
+    min-width: 25px;
+}
+
+.volume-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.volume-value {
+    min-width: 35px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+    display: none;
+}
+
+.stream-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+audio {
+    display: none;
+}
+
+/* Now Playing Widget */
+.now-playing {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.now-playing h2 {
+    font-size: 14px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.track-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.album-art {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+.album-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.album-art .placeholder {
+    font-size: 24px;
+}
+
+.track-details {
+    flex: 1;
+    text-align: left;
+}
+
+.track-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.track-artist {
+    font-size: 14px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.track-album {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+}
+
+.audio-quality {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.track-badges {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.badge.new { background: #4caf50; }
+.badge.explicit { background: #f44336; }
+.badge.summer { background: #ff9800; }
+.badge.vidgames { background: #9c27b0; }
+
+/* Recently Played Widget */
+.recently-played {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.recently-played h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.recent-track {
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #667eea;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.recent-track-number {
+    width: 24px;
+    height: 24px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.recent-track-info {
+    flex: 1;
+    text-align: left;
+}
+
+.recent-track-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.recent-track-artist {
+    color: #666;
+    font-size: 11px;
+}
+
+.loading {
+    text-align: center;
+    padding: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+}
+
+.recently-played .loading {
+    color: #999;
+}
+
+.metadata-error {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.recently-played .metadata-error {
+    background: #fee;
+    color: #c33;
+}
+
+/* Rating Buttons */
+.rating-container {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rating-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.rating-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: white;
+    font-weight: 600;
+}
+
+.rating-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.rating-btn:active {
+    transform: scale(0.95);
+}
+
+.rating-btn.active {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.rating-btn.thumbs-up.active {
+    background: #4caf50;
+    border-color: #4caf50;
+}
+
+.rating-btn.thumbs-down.active {
+    background: #f44336;
+    border-color: #f44336;
+}
+
+.rating-btn .icon {
+    font-size: 18px;
+}
+
+.rating-btn .count {
+    font-size: 14px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.rating-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
